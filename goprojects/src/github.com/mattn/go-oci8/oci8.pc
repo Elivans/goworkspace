@@ -1,0 +1,14 @@
+prefix=/devel/target/XXXXXXXXXXXXXXXXXXXXXXXXXX
+exec_prefix=${prefix}
+libdir=D:/Program Files/Ora10InstantClient/sdk/lib/msvc
+includedir=D:/Program Files/Ora10InstantClient/sdk/include
+
+glib_genmarshal=glib-genmarshal
+gobject_query=gobject-query
+glib_mkenums=glib-mkenums
+
+Name: oci8
+Description: oci8 library
+Libs: -L${libdir} -loci
+Cflags: -I${includedir}
+Version: 11.2

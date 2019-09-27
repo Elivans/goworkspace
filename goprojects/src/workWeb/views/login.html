@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title>登录页面 - 任务管理系统</title>
+		<meta name="description" content="Restyling jQuery UI Widgets and Elements" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+		<link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../static/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../static/css/ace-fonts.css" />
+		<link rel="stylesheet" href="../static/css/ace.min.css" id="main-ace-style" />
+		<!--[if lte IE 9]>
+			<link rel="stylesheet" href="../static/css/ace-part2.min.css" />
+		<![endif]-->
+		<!--[if lte IE 9]>
+		  <link rel="stylesheet" href="../static/css/ace-ie.min.css" />
+		<![endif]-->
+		<script src="../static/js/ace-extra.min.js"></script>
+		<script src="../static/js/md5.js"></script>
+		<script src="../static/js/httpRequest.js"></script>
+		<!--[if lte IE 8]>
+		<script src="../static/js/html5shiv.min.js"></script>
+		<script src="../static/js/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	</head>
+
+	<body class="login-layout blur-login" onkeydown="_key()">
+		<div class="main-container">
+			<div class="main-content">
+				<div class="row">
+					<div class="col-sm-10 col-sm-offset-1">
+						<div class="login-container">
+							<div class="center">
+								<h1>
+									<span class="white">任务管理系统</span>
+								</h1>
+							</div>
+
+							<div class="space-6"></div>
+
+							<div class="position-relative">
+								<div id="login-box" class="login-box visible widget-box no-border">
+									<div class="widget-body">
+										<div class="widget-main">
+											<h4 class="header blue lighter bigger">
+												<i class="ace-icon fa fa-coffee green"></i>
+												输入登录信息
+											</h4>
+
+											<div class="space-6"></div>
+
+											<form>
+												<fieldset>
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="text" id="username" class="form-control" placeholder="用户名" onblur="GetPwdAndChk()" />
+															<i class="ace-icon fa fa-user"></i>
+														</span>
+													</label>
+
+													<label class="block clearfix">
+														<span class="block input-icon input-icon-right">
+															<input type="password" id="password" class="form-control" placeholder="密码" />
+															<i class="ace-icon fa fa-lock"></i>
+														</span>
+													</label>
+
+													<div class="space"></div>
+
+													<div class="clearfix">
+														<label class="inline">
+															<input id="chkRememberPwd" type="checkbox" class="ace" />
+															<span class="lbl"> 记住我</span>
+														</label>
+
+														<button type="button" class="width-35 pull-right btn btn-sm btn-primary" onclick="Login()">
+															<i class="ace-icon fa fa-key"></i>
+															<span class="bigger-110">登录</span>
+														</button>
+													</div>
+
+													<div class="space-4"></div>
+												</fieldset>
+											</form>
+
+										</div><!-- /.widget-main -->
+
+									</div><!-- /.widget-body -->
+								</div><!-- /.login-box -->
+
+							</div><!-- /.position-relative -->
+
+						</div>
+					</div><!-- /.col -->
+				</div><!-- /.row -->
+			</div><!-- /.main-content -->
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='../static/js/jquery.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+		<script type="text/javascript">
+		 window.jQuery || document.write("<script src='../static/js/jquery1x.min.js'>"+"<"+"/script>");
+		</script>
+		<![endif]-->
+		<script type="text/javascript">
+			if('ontouchstart' in document.documentElement) document.write("<script src='../static/js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
+		</script>
+
+		<!-- inline scripts related to this page -->
+		
+	</body>
+</html>
+
+<script type="text/javascript">
+  function _key() { 
+    if(event.keyCode ==13) 
+      Login(); 
+  } 
+
+  window.onload=function onLoginLoaded() {
+    GetLastUser();
+  }
+  function GetLastUser() {
+    var id = "49BAC005-7D5B-4231-8CEA-16939BEACD67";//GUID标识符
+    var usr = GetCookie(id);
+    if (usr != null) {
+      document.getElementById('username').value = usr;
+    } 
+    else {
+      document.getElementById('password').value = "";
+    }
+    GetPwdAndChk();
+  }
+  //点击登录时触发客户端事件
+  function Login() {
+	
+	var url = "http://127.0.0.1:8089/index";
+	//alert(url);
+	//var rt = window.showModalDialog(url, null, "scroll:no;resizable:no;help:no;status:no;dialogHeight:830px;dialogWidth:800px");
+	
+    //取用户名
+    var usr = document.getElementById('username').value;
+	if (usr == "") {
+		alert("请输入用户名！")
+        return
+	}
+    //取密码值
+    var pwd = document.getElementById('password').value;
+    if (pwd == "") {
+		alert("请输入用密码！")
+        return
+	}
+	var ret = PostInfo(window.location.href+"?username="+usr+"&password="+md5(pwd));
+	if (ret == 'true') {
+		top.location='index';
+	} else {
+		alert(ret);
+		return
+	}
+	
+    //将最后一个用户信息写入到Cookie
+    SetLastUser(usr);
+    //如果记住密码选项被选中
+    if(document.getElementById('chkRememberPwd').checked == true) {
+      var expdate = new Date();
+      expdate.setTime(expdate.getTime() + 14 * (24 * 60 * 60 * 1000));
+      //将用户名和密码写入到Cookie
+      SetCookie(usr, pwd, expdate);
+    } 
+    else {
+      //如果没有选中记住密码,则立即过期
+      ResetCookie();
+    }
+	
+  }
+  function SetLastUser(usr) {
+    var id = "49BAC005-7D5B-4231-8CEA-16939BEACD67";
+    var expdate = new Date();
+    //当前时间加上两周的时间
+    expdate.setTime(expdate.getTime() + 14 * (24 * 60 * 60 * 1000));
+    SetCookie(id, usr, expdate);
+  }
+  //用户名失去焦点时调用该方法
+  function GetPwdAndChk() {
+    var usr = document.getElementById('username').value;
+    var pwd = GetCookie(usr);
+    if (pwd != null) {
+      document.getElementById('chkRememberPwd').checked = true;
+      document.getElementById('password').value = pwd;
+    } 
+    else {
+      document.getElementById('chkRememberPwd').checked = false;
+      document.getElementById('password').value = "";
+    }
+  }
+  //取Cookie的值
+  function GetCookie(name) {
+    var arg = name + "=";
+    var alen = arg.length;
+    var clen = document.cookie.length;
+    var i = 0;
+    while (i < clen) {
+      var j = i + alen;
+      //alert(j);
+      if (document.cookie.substring(i, j) == arg) return getCookieVal(j);
+      i = document.cookie.indexOf(" ", i) + 1;
+      if (i == 0) break;
+    }
+    return null;
+  }
+  function getCookieVal(offset) {
+    var endstr = document.cookie.indexOf(";", offset);
+    if (endstr == -1) endstr = document.cookie.length;
+    return unescape(document.cookie.substring(offset, endstr));
+  }
+  //写入到Cookie
+  function SetCookie(name, value, expires) {
+    var argv = SetCookie.arguments;
+    //本例中length = 3
+    var argc = SetCookie.arguments.length;
+    var expires = (argc > 2) ? argv[2] : null;
+    var path = (argc > 3) ? argv[3] : null;
+    var domain = (argc > 4) ? argv[4] : null;
+    var secure = (argc > 5) ? argv[5] : false;
+    document.cookie = name + "=" + escape(value) + ((expires == null) ? "" : ("; expires=" + expires.toGMTString())) + ((path == null) ? "" : ("; path=" + path)) + ((domain == null) ? "" : ("; domain=" + domain)) + ((secure == true) ? "; secure" : "");
+  }
+  function ResetCookie() {
+    var usr = document.getElementById('username').value;
+    var expdate = new Date();
+    SetCookie(usr, null, expdate);
+  }
+</script>

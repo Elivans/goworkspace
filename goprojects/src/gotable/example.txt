@@ -1,0 +1,102 @@
+table.class用法：
+  
+  //假设数据连接变量为db。
+  var db = Connect(DSN)
+  defer db.Close()
+  
+  // 表名是Zec，使用方法如下
+  var TabZec *ClassZec
+  TabZec = NewZec(db)
+  
+  // 查询一个或根据条件查询全部
+  TabZec.Select("1")
+  TabZec.Selects("xx<?", "5")
+  
+  // 日志表的用法，需要增加年月标志访问
+  mylog.Select("2") // 默认查询当前月份的主键值=2的记录
+  mylog.Select("2", "1704", "1705") // 查询多个月，动态参数
+  
+  // 根据条件查询
+  mylog.Selects("1704", "1=1")  // 只查一个表
+  mylog.Selects("1701-", "1=1") // 从开始到当前月
+  mylog.Selects("1605-1706", "custid=?", "1234") // 指定月份范围
+  
+  // 日志表的用法，除了查询以外，其他都和状态表一样。
+  
+  // 打印、清零、数量
+  TabZec.Show()
+  TabZec.Clear()
+  nums := TabZec.Count()
+  
+  // 获取整个列表
+  var my_list = TabZec.Data();
+  for k,v := range my_list {
+    fmt.Println("range: ", k, v)
+    fmt.Println("value: ", v.Xx, v.Yy, v.Memo)
+  }
+  
+  // 列表增加
+  var r TableZec
+  r.Xx = "1"
+  r.Yy = "2"
+  r.Memo = "abcd"
+  TabZec.Add(r)
+  
+  // 列表获取和清除
+  r := TabZec.Get("1")
+  TabZec.Del(r.Xx);
+  
+  // 列表修改
+  r.Memo = "test modify";
+  TabZec.Set(r);
+  
+  // 增删改时，如果是有R表的，需要指定流水号
+  TabZec.Serialno("zeales00001") // 不指定就默认是null
+  
+  // 更新一个记录或全部内存记录
+  TabZec.Update("1")
+  TabZec.Update("")
+  
+  // 更新指定字段，第一个是主键
+  TabZec.Updates("1", "memo=?", "test updates")
+  
+  // 删除一个记录或全部内存记录
+  TabZec.Delete("1")
+  TabZec.Delete("")
+  
+  // 增加一个记录或全部内存记录
+  TabZec.Insert("1")
+  TabZec.Inserts("")
+  
+  // 设置流水号
+  TabZec.Serialno("serialno1234")
+
+// Q1: 为什么所有字段都用string
+// A1: 数据库的类型和go中类型没法对应，同样int，长度不一样，数据库的int字段一般都是bigint，长度达到几十位，用在go中会溢出，同样日期类型也不好转换。
+
+// Q2: 为什么操作都要先加到列表
+// A2: 列表都在内存中，方便数据的生命周期跟踪。数据尽量避免像变量一样用完就消失，在内存中可以方便事务完成后，对内存中数据进行验证，或者统一提交事务。
+
+// Q3: 为什么要有流水号
+// A3: 有些表需要些R表，需要流水号，为了方便生成，就统一冗余流水号值。如果没有设置也没关系，照用。
+
+// Q4: 生成方法有哪些：
+// A4: 普通单表操作：假设表名为 zzz，主键字段为xx，日志表为 zzz_log
+       gotable root/123456@10.205.28.103/test zzz xx
+       
+       表操作同时记录R表数据
+       gotable root/123456@10.205.28.103/test zec xx rol
+       
+       表操作同时记录T表数据
+       gotable root/123456@10.205.28.103/test zec xx iog
+       
+       表操作同时记录R+T表数据
+       gotable root/123456@10.205.28.103/test zec xx rni
+       
+       日志表操作
+       gotable root/123456@10.205.28.103/test zzz_log logid log > mylog.go
+       
+
+我的测试样例：
+   gotable root/123456@10.205.28.103/test zec_log logid log > mylog.go
+   gotable root/123456@10.205.28.103/test zec xx rni > lib.go

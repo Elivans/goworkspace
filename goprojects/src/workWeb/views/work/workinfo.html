@@ -1,0 +1,121 @@
+
+
+<table width="100%" class="CSSearchTbl" cellpadding="0" cellspacing="0">
+  <form id="searchfrom" method="POST" >
+  <input type="hidden" id="pagenum" name="pagenum" value="1">
+  <input type="hidden" name="method" value="query">
+  <tr>
+    <td class="left">任务名称：</td>
+    <td class="right"><input name="workname" type="text" size="16"  /></td>
+    <td class="left">任务类型：</td>
+    <td class="right">
+    	<select name="worktype">
+			<option value="">所有</option>
+            {{str2html .Gcode_work_type}}
+        </select>
+    </td>
+    <td class="left">任务状态：</td>
+    <td class="right">
+    	<select name="workstatus">
+            {{str2html .Gcode_work_status}}
+        </select>
+    </td>
+	<td class="left" colspan="2">
+      <input name="submit1" class="btn btn-primary" type="submit" value="查询"/>
+      <input name="submit2" class="btn btn-primary" type="button" onClick="reset()" value="重置"/>
+	</td>
+  </tr>
+  <tr>
+    
+  </tr>
+  </form>
+</table>
+
+<table id="sample-table-1" class="table table-striped table-bordered table-hover">
+	<thead>
+		<tr>
+			<th class="center" style="display:none;">任务ID</th>
+			<th class="center">任务编号</th>
+			<th class="center">任务类型</th>
+			<th class="center">隶属项目</th>
+			<th class="center">任务名称</th>
+			<th class="center">计划工时(h)</th>
+			<th class="center">计划完成时间</th>
+			<th class="center">实际工时(h)</th>
+			<th class="center">实际完成时间</th>
+			<th class="center">任务状态</th>
+			<th class="center">操作</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{{range $key, $val := .Records}}
+		<tr>
+			<td align="left" style="display:none;">任务ID</td>
+			<td align="left">{{index $val "workid"}}</td>
+			<td align="center">正常</td>
+			<td align="center">广东省集中BOSS</td>
+			<td align="center">{{index $val "workname"}}</td>
+			<td align="right">24</td>
+			<td align="center">2017-09-25</td>
+			<td align="right">0</td>
+			<td align="center">2017-09-25</td>
+			<td align="center">已上载</td>
+			<td>
+				<div class="hidden-sm hidden-xs btn-group">
+					<button class="btn btn-xs btn-success" title="">
+						<i class="ace-icon fa fa-search-plus bigger-120"></i>
+					</button>
+
+					<button class="btn btn-xs btn-info">
+						<i class="ace-icon fa fa-pencil bigger-120"></i>
+					</button>
+
+					<button class="btn btn-xs btn-danger">
+						<i class="ace-icon fa fa-trash-o bigger-120"></i>
+					</button>
+				</div>
+			</td>
+		</tr>
+		{{end}}
+	</tbody>
+</table>
+			
+<div>
+	<ul class="pagination pull-right no-margin">
+		<li>
+			<a href="javascript:void(0)" onClick="chgPage(1)">首页</a>
+		</li>
+		<li>
+			<a href="#">上一页</a>
+		</li>
+
+		<li class="active">
+			<a href="#">1</a>
+		</li>
+
+		<li>
+			<a href="javascript:void(0)" onClick="chgPage(2)">2</a>
+		</li>
+
+		<li>
+			<a href="#">3</a>
+		</li>
+		<li>
+			<a href="#">下一页</a>
+		</li>
+		<li>
+			<a href="#">末页</a>
+		</li>
+	</ul>
+</div>
+
+<script src="../static/js/httpRequest.js"></script>
+<script type="text/javascript">
+	//提交信息
+	function chgPage(pagenum){
+		document.getElementById("pagenum").value=pagenum;
+	    document.getElementById("searchfrom").submit();
+	}
+	
+</script>
